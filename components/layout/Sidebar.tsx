@@ -86,38 +86,38 @@ export const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        'fixed top-3 left-3 bottom-3 z-40 bg-[#0D1117] border border-[#21262D] transition-all duration-300 flex flex-col shadow-2xl rounded-2xl text-slate-300',
+        'fixed top-3 left-3 bottom-3 z-40 bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-[#21262D] transition-all duration-300 flex flex-col shadow-xl dark:shadow-2xl rounded-2xl text-slate-800 dark:text-slate-300',
         sidebarOpen ? 'w-64' : 'w-20'
       )}
     >
-      {/* Fixed Dark Sidebar Header */}
-      <div className="h-16 flex items-center justify-between px-5 border-b border-[#21262D] shrink-0">
+      {/* Sidebar Header */}
+      <div className="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-[#21262D] shrink-0">
         <Link href="/" className="flex items-center gap-3 overflow-hidden">
           <div className="h-9 w-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center shadow-md shrink-0">
             <Zap className="h-5 w-5 fill-current text-white" />
           </div>
           {sidebarOpen && (
             <div className="flex flex-col truncate whitespace-nowrap">
-              <span className="text-base font-extrabold tracking-tight text-white leading-none">ARIA WMS</span>
-              <span className="text-[10px] text-blue-400 font-semibold tracking-wide uppercase">Enterprise v5.0</span>
+              <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">ARIA WMS</span>
+              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold tracking-wide uppercase">Enterprise v5.0</span>
             </div>
           )}
         </Link>
         <button
           type="button"
           onClick={toggleSidebar}
-          className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-[#161B22] transition shrink-0"
+          className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#161B22] transition shrink-0"
         >
           {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
       </div>
 
-      {/* Fixed Dark Sidebar Items with Single-Line Formatting */}
-      <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6 scrollbar-thin scrollbar-thumb-slate-800">
+      {/* Sidebar Items with Single-Line Formatting */}
+      <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-800">
         {navigationGroups.map((group, gIdx) => (
           <div key={gIdx} className="space-y-1.5">
             {sidebarOpen && (
-              <h5 className="px-3 text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-2 truncate whitespace-nowrap">
+              <h5 className="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase mb-2 truncate whitespace-nowrap">
                 {group.group}
               </h5>
             )}
@@ -133,12 +133,12 @@ export const Sidebar: React.FC = () => {
                   className={cn(
                     'flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all font-medium group truncate whitespace-nowrap',
                     isActive
-                      ? 'bg-[#21262D] text-blue-400 font-bold border border-blue-500/40 shadow-sm'
-                      : 'text-slate-400 hover:bg-[#161B22] hover:text-white'
+                      ? 'bg-blue-600 text-white font-bold shadow-sm dark:bg-[#21262D] dark:text-blue-400 dark:border dark:border-blue-500/40'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#161B22] hover:text-slate-900 dark:hover:text-white'
                   )}
                 >
                   <div className="flex items-center gap-3 truncate whitespace-nowrap">
-                    <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-white')} />
+                    <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white')} />
                     {sidebarOpen && <span className="truncate whitespace-nowrap">{item.name}</span>}
                   </div>
                   {sidebarOpen && item.badge && (
@@ -146,8 +146,8 @@ export const Sidebar: React.FC = () => {
                       className={cn(
                         'px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 ml-2',
                         isActive
-                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-white/20 text-white dark:bg-blue-500/20 dark:text-blue-400 dark:border dark:border-blue-500/40'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                       )}
                     >
                       {item.badge}
@@ -160,13 +160,13 @@ export const Sidebar: React.FC = () => {
         ))}
       </div>
 
-      {/* Fixed Dark Sidebar Role Footer */}
+      {/* Sidebar Role Footer */}
       {sidebarOpen && (
-        <div className="p-4 border-t border-[#21262D] bg-[#161B22]/80 rounded-b-2xl shrink-0">
+        <div className="p-4 border-t border-slate-200 dark:border-[#21262D] bg-slate-50 dark:bg-[#161B22]/80 rounded-b-2xl shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex flex-col truncate whitespace-nowrap">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold">Active Role</span>
-              <span className="text-xs font-bold text-blue-400 uppercase truncate">{activeRole}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-semibold">Active Role</span>
+              <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase truncate">{activeRole}</span>
             </div>
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm shrink-0" title="System Active" />
           </div>
