@@ -30,19 +30,30 @@ export interface AllocationExecutionPlan {
 /**
  * FEFO (First Expired First Out) stock allocation engine.
  * Sorts available inventory batches by expiry date (ascending), then by received_at (FIFO).
+ * Automatically skips expired stock batches based on referenceDate.
  */
 export function allocateInventoryFEFO(
   items: AllocationRequestItem[],
-  availableStock: InventoryLevel[]
+  availableStock: InventoryLevel[],
+  referenceDate: Date = new Date()
 ): AllocationExecutionPlan {
   const allocations: AllocationResultItem[] = [];
   const shortfalls: AllocationExecutionPlan['shortfalls'] = [];
 
-  // Deep copy of available stock to simulate allocation without mutating input directly
-  const stockPool = availableStock.map((inv) => ({
-    ...inv,
-    qty_left: Math.max(0, inv.quantity_available - inv.quantity_reserved),
-  }));
+  // Deep copy of non-expired available stock
+  const stockPool = availableStock
+    .filter((inv) => {
+      if (inv.expiry_date) {
+        const expTime = new Date(inv.expiry_date).getTime();
+        const refTime = referenceDate.getTime();
+        return expTime >= refTime;
+      }
+      return true;
+    })
+    .map((inv) => ({
+      ...inv,
+      qty_left: Math.max(0, inv.quantity_available - inv.quantity_reserved),
+    }));
 
   for (const item of items) {
     let remainingNeeded = item.quantity_required;

@@ -1,15 +1,14 @@
+import 'server-only';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { cleanAndParseJSON } from './parsers';
 import { WarehouseAnalysisOutputSchema, ExecutiveSummaryOutputSchema, OperationalQueryOutputSchema } from './schemas';
 
+/**
+ * Returns the server-side Gemini API key securely.
+ * Note: Never prefix with NEXT_PUBLIC_ or expose via client-side storage.
+ */
 export function getEffectiveApiKey(): string {
-  if (typeof window !== 'undefined') {
-    const userKey = localStorage.getItem('aria_gemini_api_key');
-    if (userKey && userKey.trim().length > 5) {
-      return userKey.trim();
-    }
-  }
-  return process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+  return process.env.GEMINI_API_KEY || '';
 }
 
 export async function runGeminiJSON<T>(prompt: string, schemaValidator?: (data: any) => T): Promise<T> {

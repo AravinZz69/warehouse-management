@@ -2,21 +2,23 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useScannerStore } from '@/stores/scanner.store';
-import { Camera, Volume2, VolumeX, RefreshCw, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Camera, Volume2, VolumeX, Search, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 interface BarcodeScannerHUDProps {
   onScanSuccess?: (code: string) => void;
   title?: string;
   className?: string;
+  autoStartCamera?: boolean;
 }
 
 export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
   onScanSuccess,
   title = 'Hardware Camera Barcode Scanner HUD',
   className,
+  autoStartCamera = true,
 }) => {
-  const { isScanning, mode, lastScannedCode, scanHistory, audioBeepEnabled, setScanning, setMode, recordScan, setAudioBeepEnabled } =
+  const { mode, lastScannedCode, scanHistory, audioBeepEnabled, setScanning, setMode, recordScan, setAudioBeepEnabled } =
     useScannerStore();
 
   const [manualCode, setManualCode] = useState('');
@@ -35,7 +37,7 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.play();
+          videoRef.current.play().catch(() => {});
         }
       }
     } catch (err) {
@@ -68,13 +70,20 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
   };
 
   useEffect(() => {
+    if (autoStartCamera) {
+      startCamera();
+    }
     return () => {
       stopCamera();
     };
-  }, []);
+  }, [autoStartCamera]);
 
   return (
-    <div className={cn('flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0D131F] p-6 text-slate-900 dark:text-slate-100 shadow-sm font-sans', className)}>
+    <div
+      role="region"
+      aria-label="Barcode Scanner HUD"
+      className={cn('flex flex-col gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0D131F] p-6 text-slate-900 dark:text-slate-100 shadow-sm font-sans', className)}
+    >
       {/* HUD Header */}
       <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <div className="flex items-center gap-2">
@@ -84,8 +93,9 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            aria-label="Toggle Audio Feedback"
             onClick={() => setAudioBeepEnabled(!audioBeepEnabled)}
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-blue-600 transition"
+            className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
             title="Toggle Audio Feedback"
           >
             {audioBeepEnabled ? <Volume2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> : <VolumeX className="h-4 w-4 text-slate-400" />}
@@ -93,15 +103,17 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
           <div className="flex rounded-xl border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-900 text-xs">
             <button
               type="button"
+              aria-label="Set single scan mode"
               onClick={() => setMode('single')}
-              className={cn('px-3 py-1 rounded-lg font-semibold transition', mode === 'single' ? 'bg-blue-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400')}
+              className={cn('px-3 py-1 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-500', mode === 'single' ? 'bg-blue-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400')}
             >
               Single
             </button>
             <button
               type="button"
+              aria-label="Set continuous scan mode"
               onClick={() => setMode('continuous')}
-              className={cn('px-3 py-1 rounded-lg font-semibold transition', mode === 'continuous' ? 'bg-blue-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400')}
+              className={cn('px-3 py-1 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-500', mode === 'continuous' ? 'bg-blue-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400')}
             >
               Continuous
             </button>
@@ -112,15 +124,16 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
       {/* Camera Viewfinder View */}
       <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-black flex items-center justify-center">
         {cameraActive ? (
-          <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
+          <video ref={videoRef} className="h-full w-full object-cover" muted playsInline aria-label="Live camera viewfinder" />
         ) : (
           <div className="flex flex-col items-center gap-3 text-slate-400 p-6 text-center">
             <Camera className="h-12 w-12 text-slate-600" />
             <p className="text-xs text-slate-400 font-medium">Camera Feed Standby. Click to initialize lens viewfinder.</p>
             <button
               type="button"
+              aria-label="Activate Camera HUD"
               onClick={startCamera}
-              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-semibold text-white transition shadow-sm"
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-semibold text-white transition shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <Camera className="h-4 w-4" /> Activate Camera HUD
             </button>
@@ -141,7 +154,11 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
 
         {/* Scan Toast Message Overlay */}
         {scanMessage && (
-          <div className="absolute bottom-4 left-4 right-4 bg-emerald-900/90 border border-emerald-500 text-emerald-200 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 justify-center shadow-xl animate-fade-in">
+          <div
+            role="status"
+            aria-live="polite"
+            className="absolute bottom-4 left-4 right-4 bg-emerald-900/90 border border-emerald-500 text-emerald-200 px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 justify-center shadow-xl animate-fade-in"
+          >
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
             <span>{scanMessage}</span>
           </div>
@@ -163,13 +180,15 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
               type="text"
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
+              aria-label="Enter or scan Barcode / SKU"
               placeholder="Enter or scan Barcode / SKU (e.g. 8901234567890)..."
-              className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-2.5 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 pl-10 pr-4 py-2.5 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <button
             type="submit"
-            className="rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs font-semibold text-blue-600 dark:text-sky-400 transition"
+            aria-label="Verify Scan"
+            className="rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs font-semibold text-blue-600 dark:text-sky-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Verify Scan
           </button>
@@ -180,22 +199,25 @@ export const BarcodeScannerHUD: React.FC<BarcodeScannerHUDProps> = ({
           <span className="text-[10px] text-slate-400 uppercase font-semibold shrink-0">Simulate Scan:</span>
           <button
             type="button"
+            aria-label="Simulate scan for SKU-LAPT-001"
             onClick={() => handleSimulateScan('8901234567890')}
-            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-blue-600 dark:text-sky-400 hover:border-blue-500 transition shrink-0 font-bold"
+            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-blue-600 dark:text-sky-400 hover:border-blue-500 transition shrink-0 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             SKU-LAPT-001
           </button>
           <button
             type="button"
+            aria-label="Simulate scan for SKU-MONI-4K27"
             onClick={() => handleSimulateScan('8901234567891')}
-            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-blue-600 dark:text-sky-400 hover:border-blue-500 transition shrink-0 font-bold"
+            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-blue-600 dark:text-sky-400 hover:border-blue-500 transition shrink-0 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             SKU-MONI-4K27
           </button>
           <button
             type="button"
+            aria-label="Simulate scan for Bin A-12-3"
             onClick={() => handleSimulateScan('BIN-A-12-3')}
-            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-amber-600 dark:text-amber-400 hover:border-amber-500 transition shrink-0 font-bold"
+            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-amber-600 dark:text-amber-400 hover:border-amber-500 transition shrink-0 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             BIN: A-12-3
           </button>

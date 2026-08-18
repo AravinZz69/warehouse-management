@@ -4,15 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUIStore } from '@/stores/ui.store';
 import { useAlertStore } from '@/stores/alert.store';
-import { useARIAStore } from '@/stores/aria.store';
 import { UserRole } from '@/types/database.types';
 import {
   Search,
   Barcode,
   Bell,
-  Cpu,
   Building2,
-  User,
   Sun,
   Moon,
   Mail,
@@ -33,7 +30,6 @@ export const Topbar: React.FC = () => {
     setThemeMode,
   } = useUIStore();
   const { alerts } = useAlertStore();
-  const { pulseScore } = useARIAStore();
   const [mounted, setMounted] = useState(false);
 
   const unreadAlerts = alerts.filter((a) => !a.read).length;
@@ -75,6 +71,7 @@ export const Topbar: React.FC = () => {
 
   return (
     <header
+      aria-label="Top navigation bar"
       className={cn(
         'fixed top-3 right-3 z-30 h-16 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-2xl transition-all duration-300 flex items-center justify-between px-6 shadow-xs',
         sidebarOpen ? 'left-72' : 'left-28'
@@ -84,16 +81,18 @@ export const Topbar: React.FC = () => {
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <button
           type="button"
+          aria-label="Toggle navigation sidebar"
           onClick={toggleSidebar}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+          className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         <button
           type="button"
+          aria-label="Open command search menu (Shortcut: Command K)"
           onClick={() => setCommandMenuOpen(true)}
-          className="w-full flex items-center justify-between px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-transparent hover:border-slate-300 dark:hover:border-slate-700 text-xs text-slate-500 transition font-medium"
+          className="w-full flex items-center justify-between px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-transparent hover:border-slate-300 dark:hover:border-slate-700 text-xs text-slate-600 dark:text-slate-300 transition font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <div className="flex items-center gap-3 truncate whitespace-nowrap">
             <Search className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
@@ -112,28 +111,31 @@ export const Topbar: React.FC = () => {
           <Building2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <select
             value={activeWarehouseId}
+            aria-label="Select active warehouse facility"
             onChange={(e) => setActiveWarehouseId(e.target.value)}
-            className="bg-transparent text-slate-700 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer"
+            className="bg-transparent text-slate-800 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer"
           >
             <option value="wh-001">Chicago Megahub Alpha</option>
             <option value="wh-002">Seattle Hub</option>
           </select>
         </div>
 
-        {/* Barcode Scan HUD */}
+        {/* Barcode Scan HUD Link */}
         <Link
           href="/inventory/scanner"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 transition"
+          aria-label="Open Barcode Scan HUD"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <Barcode className="h-4 w-4" />
           <span className="hidden sm:inline">Scan HUD</span>
         </Link>
 
-        {/* Instant Responsive Theme Toggle Button */}
+        {/* Responsive Theme Toggle Button */}
         <button
           type="button"
+          aria-label="Toggle dark mode or light mode theme"
           onClick={handleToggleTheme}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition shadow-2xs cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
           title="Click to toggle Light Mode / Dark Mode"
         >
           {themeMode === 'dark' ? (
@@ -152,7 +154,8 @@ export const Topbar: React.FC = () => {
         {/* Messages Icon */}
         <Link
           href="/aria"
-          className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative"
+          aria-label="Open ARIA AI HQ messages"
+          className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative focus:outline-none focus:ring-2 focus:ring-blue-500"
           title="ARIA AI HQ"
         >
           <Mail className="h-4 w-4" />
@@ -161,7 +164,8 @@ export const Topbar: React.FC = () => {
         {/* Notification Bell */}
         <Link
           href="/alerts"
-          className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative"
+          aria-label={`View notifications (${unreadAlerts} unread)`}
+          className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <Bell className="h-4 w-4" />
           {unreadAlerts > 0 && (
@@ -178,6 +182,7 @@ export const Topbar: React.FC = () => {
             <span className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Alex Grant</span>
             <select
               value={activeRole}
+              aria-label="Switch active user role"
               onChange={(e) => setActiveRole(e.target.value as UserRole)}
               className="bg-transparent text-[10px] text-blue-600 dark:text-blue-400 font-semibold focus:outline-none cursor-pointer uppercase"
             >

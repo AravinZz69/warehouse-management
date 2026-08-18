@@ -13,7 +13,7 @@ export type OrderStatus =
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type PriorityLevel = 'low' | 'medium' | 'high' | 'critical';
-export type CustomerTier = 'standard' | 'priority' | 'vip';
+export type CustomerTier = 'standard' | 'priority' | 'vip' | 'enterprise';
 
 export interface OrderItem {
   id: string;

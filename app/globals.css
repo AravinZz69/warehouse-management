@@ -8,12 +8,12 @@ html:not(.dark) {
   --bg-base: #F8FAFC;
   --bg-surface: #FFFFFF;
   --bg-surface-sub: #F1F5F9;
-  --border-subtle: #E2E8F0;
-  --border-active: #2563EB;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-mono: #2563EB;
-  --accent-blue: #2563EB;
+  --border-subtle: #CBD5E1;
+  --border-active: #1D4ED8;
+  --text-primary: #0F172A;   /* Contrast ratio > 15:1 */
+  --text-secondary: #334155; /* Contrast ratio > 7:1 (WCAG AAA) */
+  --text-mono: #1D4ED8;
+  --accent-blue: #1D4ED8;
 }
 
 html[data-theme="dark"],
@@ -21,10 +21,10 @@ html.dark {
   --bg-base: #0B0F19;
   --bg-surface: #111827;
   --bg-surface-sub: #1F2937;
-  --border-subtle: #1F2937;
+  --border-subtle: #374151;
   --border-active: #3B82F6;
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
+  --text-primary: #F9FAFB;   /* Contrast ratio > 15:1 */
+  --text-secondary: #E2E8F0; /* Contrast ratio > 8.5:1 (WCAG AAA) */
   --text-mono: #60A5FA;
   --accent-blue: #3B82F6;
 }
@@ -35,4 +35,10 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* WCAG AA Keyboard Focus Indicators */
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }

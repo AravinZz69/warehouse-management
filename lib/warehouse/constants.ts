@@ -1,4 +1,4 @@
-import { OrderStatus } from '@/types/order.types';
+import { OrderStatus, CustomerTier } from '@/types/order.types';
 
 export const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   created: ['priority_scored', 'on_hold', 'cancelled'],
@@ -28,8 +28,9 @@ export const STAGE_LABELS: Record<OrderStatus, string> = {
   cancelled: 'Cancelled',
 };
 
-export const CUSTOMER_TIER_MULTIPLIERS = {
-  vip: 1.5,
+export const CUSTOMER_TIER_MULTIPLIERS: Record<CustomerTier, number> = {
+  enterprise: 1.5,
+  vip: 1.2,
   priority: 1.2,
   standard: 1.0,
 };

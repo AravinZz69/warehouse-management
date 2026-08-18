@@ -5,7 +5,7 @@ import { ARIADecision } from '@/types/aria.types';
 import { useARIAStore } from '@/stores/aria.store';
 import { useAlertStore } from '@/stores/alert.store';
 import { StatusBadge } from '@/components/shared/StatusBadge';
-import { Cpu, AlertTriangle, CheckCircle2, Zap, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Cpu, CheckCircle2, Zap, ArrowRight, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 interface ARIADecisionCardProps {
@@ -45,7 +45,10 @@ export const ARIADecisionCard: React.FC<ARIADecisionCardProps> = ({ decision }) 
   };
 
   return (
-    <div
+    <article
+      role="article"
+      aria-live="polite"
+      aria-label={`ARIA Decision Card: ${decision.detected_problem.title}`}
       className={cn(
         'flex flex-col gap-4 rounded-2xl border p-6 transition-all shadow-sm font-sans',
         decision.severity === 'critical'
@@ -79,30 +82,34 @@ export const ARIADecisionCard: React.FC<ARIADecisionCardProps> = ({ decision }) 
       {/* Problem & Cause Block */}
       <div className="space-y-2">
         <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">{decision.detected_problem.title}</h4>
-        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{decision.detected_problem.description}</p>
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 font-medium">
-          <strong className="text-purple-600 dark:text-purple-400 block mb-1">Root Cause Analysis:</strong>
+        <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed font-medium">{decision.detected_problem.description}</p>
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 font-medium">
+          <strong className="text-purple-700 dark:text-purple-300 block mb-1">Root Cause Analysis:</strong>
           {decision.root_cause_analysis}
         </div>
       </div>
 
       {/* Action Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3">
-        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
           <span>Mode:</span>
-          <strong className="text-slate-900 dark:text-slate-200 uppercase font-bold">{decision.execution_mode}</strong>
+          <strong className="text-slate-900 dark:text-slate-100 uppercase font-bold">{decision.execution_mode}</strong>
         </div>
 
         {isExecuted ? (
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
+          <span
+            role="status"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-xs font-bold"
+          >
             <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Executed
           </span>
         ) : (
           <button
             type="button"
             disabled={executing}
+            aria-label={`Execute ARIA decision: ${decision.suggested_action.title}`}
             onClick={handleExecuteAction}
-            className="inline-flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-xs font-bold transition shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-xs font-bold transition shadow-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             {executing ? (
               <RefreshCw className="h-4 w-4 animate-spin" />
@@ -115,6 +122,6 @@ export const ARIADecisionCard: React.FC<ARIADecisionCardProps> = ({ decision }) 
           </button>
         )}
       </div>
-    </div>
+    </article>
   );
 };
