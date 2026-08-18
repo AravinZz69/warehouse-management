@@ -40,18 +40,18 @@ export const QCChecklistView: React.FC<QCChecklistViewProps> = ({ order, onPassQ
   ];
 
   return (
-    <div className="flex flex-col gap-6 rounded-xl border border-slate-800 bg-[#0D131F] p-6 text-slate-100 shadow-xl">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0D131F] p-6 text-slate-900 dark:text-slate-100 shadow-sm font-sans">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
         <div className="flex items-center gap-3">
-          <ShieldCheck className="h-6 w-6 text-sky-400" />
+          <ShieldCheck className="h-6 w-6 text-emerald-600 dark:text-sky-400" />
           <div>
-            <h3 className="font-mono text-base font-bold uppercase text-slate-100">7-POINT QUALITY CONTROL INSPECTION</h3>
-            <p className="text-xs font-mono text-slate-400">Order: {order.order_number} | Priority: {order.priority_level.toUpperCase()}</p>
+            <h3 className="text-base font-bold uppercase text-slate-900 dark:text-slate-100">7-POINT QUALITY CONTROL INSPECTION</h3>
+            <p className="text-xs text-slate-500 font-mono">Order: {order.order_number} | Priority: {order.priority_level.toUpperCase()}</p>
           </div>
         </div>
         <span
-          className={`px-3 py-1 rounded text-xs font-mono font-bold border ${
-            allPassed ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-red-950 text-red-400 border-red-800'
+          className={`px-3 py-1 rounded-full text-xs font-bold border ${
+            allPassed ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800' : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800'
           }`}
         >
           {allPassed ? 'PASSING ALL 7 CHECKS' : 'DEFECT DETECTED'}
@@ -66,20 +66,20 @@ export const QCChecklistView: React.FC<QCChecklistViewProps> = ({ order, onPassQ
             <div
               key={c.key}
               onClick={() => toggleCheck(c.key as any)}
-              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition select-none ${
+              className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition select-none ${
                 isChecked
-                  ? 'bg-emerald-950/30 border-emerald-800/80 text-emerald-300'
-                  : 'bg-red-950/30 border-red-800/80 text-red-300'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-300'
+                  : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/80 text-red-900 dark:text-red-300'
               }`}
             >
               {isChecked ? (
-                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               ) : (
-                <XCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
               )}
               <div>
-                <span className="font-mono text-xs font-bold block">{c.label}</span>
-                <span className="text-[10px] font-mono text-slate-400 mt-0.5 block">{c.desc}</span>
+                <span className="text-xs font-bold block">{c.label}</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 block font-medium">{c.desc}</span>
               </div>
             </div>
           );
@@ -88,15 +88,15 @@ export const QCChecklistView: React.FC<QCChecklistViewProps> = ({ order, onPassQ
 
       {/* Defect Logger Box */}
       {!allPassed && (
-        <div className="space-y-2 border-t border-red-900/40 pt-4">
-          <label className="text-xs font-mono font-bold text-red-400 uppercase flex items-center gap-1.5">
-            <AlertTriangle className="h-4 w-4 text-red-400" /> Log Defect Description & Return Code:
+        <div className="space-y-2 border-t border-red-200 dark:border-red-900/40 pt-4">
+          <label className="text-xs font-bold text-red-600 dark:text-red-400 uppercase flex items-center gap-1.5">
+            <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" /> Log Defect Description & Return Code:
           </label>
           <textarea
             value={defectNotes}
             onChange={(e) => setDefectNotes(e.target.value)}
             placeholder="Describe defect details (e.g. Scratched screen on SKU-MONI-4K27, returning to quarantine bin)..."
-            className="w-full h-20 rounded bg-slate-900 border border-red-900/60 p-3 text-xs font-mono text-slate-200 focus:outline-none"
+            className="w-full h-20 rounded-xl bg-slate-50 dark:bg-slate-900 border border-red-200 dark:border-red-900/60 p-3 text-xs font-medium text-slate-900 dark:text-slate-200 focus:outline-none"
           />
         </div>
       )}
@@ -107,7 +107,7 @@ export const QCChecklistView: React.FC<QCChecklistViewProps> = ({ order, onPassQ
           <button
             type="button"
             onClick={() => onFailQC && onFailQC([defectNotes || 'QC inspection failed. Sent to quarantine.'])}
-            className="rounded bg-red-600 hover:bg-red-500 px-6 py-2.5 text-xs font-mono font-bold text-white transition shadow-lg"
+            className="rounded-xl bg-red-600 hover:bg-red-700 px-6 py-2.5 text-xs font-bold text-white transition shadow-sm"
           >
             FLAG DEFECT & QUARANTINE ORDER
           </button>
@@ -116,7 +116,7 @@ export const QCChecklistView: React.FC<QCChecklistViewProps> = ({ order, onPassQ
           type="button"
           disabled={!allPassed}
           onClick={() => onPassQC && onPassQC()}
-          className="rounded bg-emerald-600 hover:bg-emerald-500 px-6 py-2.5 text-xs font-mono font-bold text-white transition shadow-lg disabled:opacity-50"
+          className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-6 py-2.5 text-xs font-bold text-white transition shadow-sm disabled:opacity-50"
         >
           APPROVE QC & DISPATCH TO CARRIER DESK
         </button>

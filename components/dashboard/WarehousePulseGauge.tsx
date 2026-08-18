@@ -18,12 +18,12 @@ export const WarehousePulseGauge: React.FC<WarehousePulseGaugeProps> = ({ score 
   if (score < 60) color = '#EF4444'; // Red
   else if (score < 80) color = '#F59E0B'; // Amber
 
-  const COLORS = [color, '#1E293B'];
+  const COLORS = [color, '#E2E8F0'];
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-800 bg-[#0D131F] text-slate-100 shadow-xl relative">
-      <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-2">
-        <Activity className="h-4 w-4 text-sky-400" />
+    <div className="flex flex-col items-center justify-center p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-slate-100 shadow-sm relative font-sans">
+      <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+        <Activity className="h-4 w-4 text-blue-600 dark:text-sky-400" />
         <span>Industrial Pulse Gauge</span>
       </div>
 
@@ -42,7 +42,7 @@ export const WarehousePulseGauge: React.FC<WarehousePulseGaugeProps> = ({ score 
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={index === 0 ? color : '#E2E8F0'} />
               ))}
             </Pie>
           </PieChart>
@@ -51,7 +51,7 @@ export const WarehousePulseGauge: React.FC<WarehousePulseGaugeProps> = ({ score 
           <span className="text-2xl font-mono font-black tracking-tight" style={{ color }}>
             {score}
           </span>
-          <span className="block text-[9px] font-mono text-slate-500 uppercase">/100 Index</span>
+          <span className="block text-[9px] font-bold text-slate-400 uppercase">/100 Index</span>
         </div>
       </div>
     </div>
