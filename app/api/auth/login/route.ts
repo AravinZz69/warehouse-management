@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email, role } = body;
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         id: `user-${Date.now()}`,
@@ -14,6 +14,15 @@ export async function POST(req: NextRequest) {
         full_name: 'Alexander Sterling',
       },
     });
+
+    response.cookies.set('aria_session', 'true', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: 'lax',
+      httpOnly: false,
+    });
+
+    return response;
   } catch (err) {
     return NextResponse.json({ error: 'Authentication failed' }, { status: 400 });
   }

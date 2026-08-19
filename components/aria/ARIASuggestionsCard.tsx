@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useARIAStore } from '@/stores/aria.store';
 import { useAlertStore } from '@/stores/alert.store';
-import { runGeminiJSON, getEffectiveApiKey } from '@/lib/gemini/client';
 import {
   Sparkles,
   ArrowRight,
@@ -28,7 +27,7 @@ export const ARIASuggestionsCard: React.FC = () => {
   const [executedSteps, setExecutedSteps] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const key = getEffectiveApiKey();
+    const key = typeof window !== 'undefined' ? localStorage.getItem('aria_gemini_api_key') || '' : '';
     setActiveKey(key);
     setApiKeyInput(key);
   }, []);

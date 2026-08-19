@@ -3,9 +3,6 @@
 import React, { useState } from 'react';
 import { useARIAStore } from '@/stores/aria.store';
 import { Cpu, AlertTriangle, Sparkles, RefreshCw, FileText, CheckCircle2 } from 'lucide-react';
-import { runGeminiJSON } from '@/lib/gemini/client';
-import { buildExecutiveSummaryPrompt } from '@/lib/gemini/prompts';
-import { ExecutiveSummaryOutputSchema } from '@/lib/gemini/schemas';
 
 export const ARIAExecutiveBrief: React.FC = () => {
   const { pulseScore, summaries, addSummary, isAnalyzing, setAnalyzing } = useARIAStore();
@@ -16,31 +13,27 @@ export const ARIAExecutiveBrief: React.FC = () => {
   const handleGenerateShiftHandover = async () => {
     setAnalyzing(true);
     try {
-      const prompt = buildExecutiveSummaryPrompt({
-        period: 'Morning Shift (06:00 - 14:00)',
-        total_orders_fulfilled: 184,
-        total_revenue: 42850,
-        sla_compliance_pct: 99.1,
-        health_score: pulseScore,
-        decisions_executed: 5,
-        stockout_skus: ['SKU-LAPT-001'],
+      const response = await fetch('/api/aria/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
       });
+      const data = await response.json();
+      const res = data.data || data;
 
-      const res = await runGeminiJSON(prompt, ExecutiveSummaryOutputSchema.parse);
       addSummary({
         id: `sum-${Date.now()}`,
-        summary_type: res.summary_type,
+        summary_type: res.summary_type || 'shift_handover',
         period_start: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
         period_end: new Date().toISOString(),
-        health_score: res.health_score,
-        key_highlights: res.key_highlights,
-        critical_blockers: res.critical_blockers,
-        actions_taken_count: res.actions_taken_count,
-        recommended_priorities: res.recommended_priorities,
-        raw_ai_narrative: res.raw_ai_narrative,
+        health_score: res.health_score || pulseScore,
+        key_highlights: res.key_highlights || [],
+        critical_blockers: res.critical_blockers || [],
+        actions_taken_count: res.actions_taken_count || 0,
+        recommended_priorities: res.recommended_priorities || [],
+        raw_ai_narrative: res.raw_ai_narrative || 'Shift handover briefing completed.',
         created_at: new Date().toISOString(),
       });
-      setGeneratedHandover(res.raw_ai_narrative);
+      setGeneratedHandover(res.raw_ai_narrative || 'Shift handover briefing completed.');
     } catch (err) {
       console.error('Error generating shift handover:', err);
     } finally {

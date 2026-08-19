@@ -3,9 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useARIAStore } from '@/stores/aria.store';
 import { Terminal, Send, RefreshCw } from 'lucide-react';
-import { runGeminiJSON } from '@/lib/gemini/client';
-import { buildQueryPrompt } from '@/lib/gemini/prompts';
-import { OperationalQueryOutputSchema } from '@/lib/gemini/schemas';
 
 export const ARIAChatConsole: React.FC = () => {
   const { chatHistory, addChatMessage } = useARIAStore();
@@ -26,12 +23,17 @@ export const ARIAChatConsole: React.FC = () => {
     setLoading(true);
 
     try {
-      const prompt = buildQueryPrompt(text, { warehouse: 'Chicago Alpha', active_skus: 5, pending_orders: 3 });
-      const res = await runGeminiJSON(prompt, OperationalQueryOutputSchema.parse);
+      const response = await fetch('/api/aria/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: text }),
+      });
+      const data = await response.json();
+      const res = data.data || data;
 
       addChatMessage({
         sender: 'aria',
-        text: res.answer,
+        text: res.answer || 'Query processed.',
         sqlHint: res.sql_hint,
         actions: res.recommended_actions,
       });

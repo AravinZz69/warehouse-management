@@ -13,10 +13,26 @@ export default function LoginPage() {
   const [password, setPassword] = useState('••••••••••••');
   const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActiveRole(selectedRole);
-    router.push('/');
+    setLoading(true);
+    try {
+      await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role: selectedRole }),
+      });
+    } catch (err) {
+      console.error('Login request error:', err);
+    } finally {
+      document.cookie = 'aria_session=true; path=/; max-age=604800; SameSite=Lax';
+      setActiveRole(selectedRole);
+      setLoading(false);
+      router.push('/');
+      router.refresh();
+    }
   };
 
   return (
@@ -66,9 +82,10 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-sky-600 hover:bg-sky-500 py-3 text-xs font-mono font-bold text-white transition shadow-lg"
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-50 py-3 text-xs font-mono font-bold text-white transition shadow-lg cursor-pointer"
         >
-          <span>AUTHENTICATE & ENTER TERMINAL</span>
+          <span>{loading ? 'AUTHENTICATING...' : 'AUTHENTICATE & ENTER TERMINAL'}</span>
           <ArrowRight className="h-4 w-4" />
         </button>
       </form>

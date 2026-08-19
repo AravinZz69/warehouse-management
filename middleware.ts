@@ -63,22 +63,29 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user || null;
+  } catch {
+    user = null;
+  }
+
+  const demoSession = request.cookies.get('aria_session')?.value;
+  const isAuthenticated = !!user || !!demoSession;
 
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
   const isApiRoute = pathname.startsWith('/api');
 
   // Protect all (dashboard) routes: redirect unauthenticated users to /login
-  if (!user && !isAuthRoute && !isApiRoute) {
+  if (!isAuthenticated && !isAuthRoute && !isApiRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
     return NextResponse.redirect(loginUrl);
   }
 
   // Redirect authenticated users away from /login or /register to dashboard root
-  if (user && isAuthRoute) {
+  if (isAuthenticated && isAuthRoute) {
     const dashboardUrl = request.nextUrl.clone();
     dashboardUrl.pathname = '/';
     return NextResponse.redirect(dashboardUrl);

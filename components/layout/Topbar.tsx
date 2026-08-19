@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useUIStore } from '@/stores/ui.store';
 import { useAlertStore } from '@/stores/alert.store';
 import { UserRole } from '@/types/database.types';
@@ -14,10 +15,12 @@ import {
   Moon,
   Mail,
   Menu,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 export const Topbar: React.FC = () => {
+  const router = useRouter();
   const {
     sidebarOpen,
     toggleSidebar,
@@ -68,6 +71,15 @@ export const Topbar: React.FC = () => {
     { key: 'staff', label: 'Floor Operator' },
     { key: 'supervisor', label: 'Supervisor' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {}
+    document.cookie = 'aria_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    router.push('/login');
+    router.refresh();
+  };
 
   return (
     <header
@@ -173,7 +185,7 @@ export const Topbar: React.FC = () => {
           )}
         </Link>
 
-        {/* User Profile Avatar */}
+        {/* User Profile Avatar & Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
           <div className="h-9 w-9 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
             AG
@@ -193,6 +205,15 @@ export const Topbar: React.FC = () => {
               ))}
             </select>
           </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            aria-label="Log out of system"
+            title="Log Out"
+            className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition focus:outline-none"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </header>
